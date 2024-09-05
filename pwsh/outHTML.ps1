@@ -32,6 +32,15 @@ th {
     background-color: #185a7d;
     color: white;
   }
+label {
+    padding-right: 12px;
+    font-size:1.2em;
+	line-height:1.2em;
+}
+input {
+    padding-right: 12px;
+    font-size:1.2em;
+}
 .logentry {
     white-space: pre-wrap;
     word-wrap: break-word;
@@ -43,6 +52,24 @@ footer {
     padding-rght:3px;
     font-size:1.1em;}
 '@
+
+$filterjScript = @'
+function filterMessage() {
+  var input, filter, logEntries;
+  input = document.getElementById("tableFilter");
+  filter = input.value;
+  var logEntries = document.getElementsByClassName("logentry");
+  for (i = 0; i < logEntries.length; i++) {
+    if (logEntries[i].innerText.search(filter) > -1) {
+        logEntries[i].parentNode.style.display="";
+    } else {     
+        logEntries[i].parentNode.style.display="none";
+    } 
+  }
+}
+'@
+
+
 
 <#Classmap works like so - Add a Key-Value pair to the ClassMap
   Key is the property name (in the example above the message Property)
@@ -99,8 +126,14 @@ Function Out-HtmlPage {
         [void]$html.AppendLine('<head>')
         [void]$html.AppendFormat('<title>{0}</title>',$Title).AppendLine()
         [void]$html.AppendFormat('<style type="text/css">{0}</style>',$Style).AppendLine()
+        [void]$html.AppendFormat('<script>{0}</script>',$Script:filterjScript).AppendLine()
         [void]$html.AppendLine('</head>')
         [void]$html.AppendLine('<body>')
+        [void]$html.AppendLine('<div class="filter">')
+        [void]$html.AppendLine('<label>Filter</label>')
+        [void]$html.AppendLine('<input type="text" id="tableFilter" onkeyup="filterMessage()" placeholder="Filter log .." title="Type in a name">')
+        [void]$html.AppendLine('</div>')
+
         [void]$html.AppendLine('<div>')
         [void]$html.AppendFormat('<h2>{0} @ {1}</h2>',$Title,[DateTime]::now).AppendLine()
 
@@ -156,7 +189,7 @@ Function Make-HTMLTable {
     #Use a StringBuilder class 
     $html = [System.Text.StringBuilder]::new()
     #<table>
-    [void]$html.AppendLine('<table>')
+    [void]$html.AppendLine('<table id="pwshTable">')
     [void]$html.Append('<thead>')
     [void]$html.Append('<tr>')
     $Headers | Foreach-Object {[void]$Html.AppendFormat('<th>{0}</th>',$_)}
