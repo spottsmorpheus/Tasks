@@ -6,7 +6,7 @@ $DTD = @'
 $HTMLStyle = @'
 body {
 	font-family:Arial, Helvetica, sans-serif;
-	margin:10px;
+	margin:0px;
 	padding:10px;
     font-size:1.0em;
 	line-height:1.0em;
@@ -33,13 +33,28 @@ th {
     color: white;
   }
 label {
+    margin: 10px;
     padding-right: 12px;
     font-size:1.2em;
 	line-height:1.2em;
 }
 input {
+    margin: 10px;
     padding-right: 12px;
     font-size:1.2em;
+    background-color: white;
+    color: black;
+}
+.filter {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: #185a7d;
+    color: white;
+}
+.table {
+  margin-top: 35px;
+  padding: 5px
 }
 .logentry {
     white-space: pre-wrap;
@@ -57,7 +72,7 @@ $filterjScript = @'
 function filterMessage() {
   var input, filter, logEntries;
   input = document.getElementById("tableFilter");
-  filter = input.value;
+  filter = new RegExp(input.value,"i");
   var logEntries = document.getElementsByClassName("logentry");
   for (i = 0; i < logEntries.length; i++) {
     if (logEntries[i].innerText.search(filter) > -1) {
@@ -134,7 +149,7 @@ Function Out-HtmlPage {
         [void]$html.AppendLine('<input type="text" id="tableFilter" onkeyup="filterMessage()" placeholder="Filter log .." title="Type in a name">')
         [void]$html.AppendLine('</div>')
 
-        [void]$html.AppendLine('<div>')
+        [void]$html.AppendLine('<div class="table">')
         [void]$html.AppendFormat('<h2>{0} @ {1}</h2>',$Title,[DateTime]::now).AppendLine()
 
         # Need to collect the Pipeline for the Body
